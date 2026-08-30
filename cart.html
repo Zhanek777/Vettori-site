@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Корзина — Vettori</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            background: #fdf8f3;
+            color: #4a2c30;
+        }
+        header {
+            background: #6b2737;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .лого {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #f3dfd8;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        nav a:hover { color: #fff; }
+        .содержимое {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: #6b2737;
+            text-align: center;
+        }
+        .строка-товара {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(107,39,55,0.08);
+        }
+        .строка-товара span { color: #4a2c30; }
+        .удалить {
+            background: none;
+            border: none;
+            color: #c9714a;
+            cursor: pointer;
+            font-size: 15px;
+            margin-left: 12px;
+        }
+        .итого {
+            text-align: right;
+            font-size: 20px;
+            font-weight: 700;
+            color: #6b2737;
+            margin: 20px 0;
+        }
+        button.оформить {
+            display: block;
+            width: 100%;
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .пусто {
+            text-align: center;
+            color: #a08084;
+            padding: 40px 0;
+        }
+        footer {
+            background: #6b2737;
+            color: #f3dfd8;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="лого">Vettori</a>
+        <nav>
+            <a href="index.html">Каталог</a>
+            <a href="contacts.html">Контакты</a>
+        </nav>
+    </header>
+
+    <div class="содержимое">
+        <h1>Корзина</h1>
+        <div id="список-товаров"></div>
+        <div class="итого" id="итого"></div>
+        <button class="оформить" onclick="оформитьЗаказ()">Оформить заказ через WhatsApp</button>
+    </div>
+
+    <footer>
+        <p>© 2026 Vettori. Цветочный магазин.</p>
+    </footer>
+
+    <script>
+        let корзина = JSON.parse(localStorage.getItem('корзина')) || [];
+
+        function отрисовать() {
+            const список = document.getElementById('список-товаров');
+            const итого = document.getElementById('итого');
+
+            if (корзина.length === 0) {
+                список.innerHTML = '<p class="пусто">Корзина пока пуста</p>';
+                итого.textContent = '';
+                return;
+            }
+
+            список.innerHTML = '';
+            let сумма = 0;
+            корзина.forEach((товар, индекс) => {
+                сумма += товар.цена;
+                список.innerHTML += `
+                    <div class="строка-товара">
+                        <span>${товар.название}</span>
+                        <span>${товар.цена.toLocaleString()} ₸ <button class="удалить" onclick="удалить(${индекс})">✕</button></span>
+                    </div>
+                `;
+            });
+            итого.textContent = 'Итого: ' + сумма.toLocaleString() + ' ₸';
+        }
+
+        function удалить(индекс) {
+            корзина.splice(индекс, 1);
+            localStorage.setItem('корзина', JSON.stringify(корзина));
+            отрисовать();
+        }
+
+        function оформитьЗаказ() {
+            if (корзина.length === 0) {
+                alert('Корзина пуста');
+                return;
+            }
+            let текст = 'Здравствуйте! Хочу заказать:%0A';
+            корзина.forEach(товар => {
+                текст += '- ' + товар.название + ' (' + товар.цена.toLocaleString() + ' ₸)%0A';
+            });
+            window.open('https://wa.me/77474310621?text=' + текст, '_blank');
+        }
+
+        отрисовать();
+    </script>
+
+</body>
+</html>

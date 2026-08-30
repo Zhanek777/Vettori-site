@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vettori — цветочный магазин</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            animation: появление 0.6s ease;
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            background: #241a1a;
+            color: #f3e6df;
+        }
+        @keyframes появление { from { opacity: 0; } to { opacity: 1; } }
+        #полоса-загрузки {
+            position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+            background: linear-gradient(90deg, #6b2737, #c9714a);
+            z-index: 9999; transition: width 0.4s ease, opacity 0.4s ease;
+        }
+        .товар, .faq-вопрос {
+            opacity: 0; transform: translateY(16px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .товар.видно, .faq-вопрос.видно { opacity: 1; transform: translateY(0); }
+        #плавающая-корзина.пульс { animation: пульс 0.4s ease; }
+        @keyframes пульс { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+        #уведомление {
+            position: fixed;
+            bottom: 90px;
+            right: 24px;
+            background: #6b2737;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            z-index: 60;
+        }
+        #уведомление.показано { opacity: 1; transform: translateY(0); }
+        #наверх {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: #6b2737;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+        header {
+            background: #6b2737;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .лого {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+        nav {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        nav > a, .выпадашка > a {
+            color: #f3dfd8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        nav > a:hover, .выпадашка > a:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.18);
+            border-color: rgba(255,255,255,0.4);
+        }
+        .выпадашка { position: relative; display: inline-block; }
+        .выпадашка-контент {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #34262a;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            min-width: 170px;
+            z-index: 10;
+            padding: 8px 0;
+            margin-top: 8px;
+            border: 1px solid #4a3438;
+        }
+        .выпадашка-контент a {
+            display: block;
+            padding: 8px 16px;
+            color: #f3e6df;
+        }
+        .выпадашка-контент a:hover { background: #4a3438; }
+        .выпадашка:hover .выпадашка-контент { display: block; }
+        .баннер {
+            text-align: center;
+            padding: 70px 20px;
+            background: linear-gradient(135deg, #34262a, #241a1a);
+        }
+        .баннер h1 {
+            font-family: 'Playfair Display', serif;
+            color: #f3e6df;
+            font-size: 40px;
+            margin: 0 0 10px;
+        }
+        .баннер p {
+            color: #c9714a;
+            font-size: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+        h2.заголовок-раздела {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            color: #f3e6df;
+            font-size: 26px;
+            margin: 40px 0 24px;
+        }
+        .вкладки {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+        .вкладка {
+            background: #34262a;
+            color: #f3e6df;
+            border: 1px solid #4a3438;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .вкладка.активна {
+            background: #c9714a;
+            color: #241a1a;
+            border-color: #c9714a;
+        }
+        .каталог {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+            padding: 0 20px 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .товар {
+            background: #34262a;
+            border-radius: 14px;
+            width: 230px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+            position: relative;
+            border: 1px solid #4a3438;
+        }
+        .товар:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+        }
+        .товар a { text-decoration: none; color: inherit; display: block; }
+        .бейдж {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #c9714a;
+            color: #241a1a;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+        .товар img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .товар h3 {
+            font-size: 16px;
+            margin: 12px 0 6px;
+            color: #f3e6df;
+        }
+        .цена {
+            color: #c9714a;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        button {
+            background: #6b2737;
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 22px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        button:hover { background: #8a3547; }
+        .преимущества {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+            padding: 10px 20px 60px;
+        }
+        .преимущество {
+            text-align: center;
+            max-width: 160px;
+        }
+        .преимущество .иконка { margin-bottom: 8px; display: flex; justify-content: center; }
+        .преимущество p { color: #f3e6df; font-weight: 600; font-size: 14px; }
+        .faq {
+            max-width: 700px;
+            margin: 0 auto 50px;
+            padding: 0 20px;
+        }
+        .faq-вопрос {
+            background: #34262a;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid #4a3438;
+        }
+        .faq-заголовок {
+            padding: 16px 20px;
+            font-weight: 600;
+            color: #f3e6df;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-ответ {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 20px;
+            color: #c9b3ac;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        .faq-вопрос.открыт .faq-ответ {
+            max-height: 200px;
+            padding: 0 20px 16px;
+        }
+        footer {
+            background: #6b2737;
+            color: #f3dfd8;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+        }
+        .плавающая-кнопка {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #25D366;
+            color: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            z-index: 50;
+        }
+        #плавающая-корзина {
+            position: fixed;
+            bottom: 24px;
+            right: 92px;
+            background: #6b2737;
+            color: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            z-index: 50;
+        }
+        .корзина-значок {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #c9714a;
+            color: #241a1a;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid #241a1a;
+        }
+        @media (max-width: 600px) {
+            nav { gap: 8px; font-size: 14px; }
+            .баннер h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="полоса-загрузки"></div>
+
+    <header>
+        <a href="index.html" class="лого">Vettori</a>
+        <nav>
+            <a href="#">Букеты</a>
+            <div class="выпадашка">
+                <a href="#">Повод ▾</a>
+                <div class="выпадашка-контент">
+                    <a href="#">День рождения</a>
+                    <a href="#">8 марта</a>
+                    <a href="#">14 февраля</a>
+                    <a href="#">Без причины</a>
+                </div>
+            </div>
+            <div class="выпадашка">
+                <a href="#">Подарки ▾</a>
+                <div class="выпадашка-контент">
+                    <a href="#">Сладости</a>
+                    <a href="#">Шары</a>
+                    <a href="#">Игрушки</a>
+                </div>
+            </div>
+            <a href="contacts.html">Контакты</a>
+        </nav>
+    </header>
+
+    <div class="баннер">
+        <h1>Свежие цветы с доставкой</h1>
+        <p>идеальные букеты для ваших близких</p>
+    </div>
+
+    <h2 class="заголовок-раздела">Популярные букеты</h2>
+
+    <div class="вкладки">
+        <div class="вкладка активна" onclick="фильтровать('все', this)">Все</div>
+        <div class="вкладка" onclick="фильтровать('розы', this)">Розы</div>
+        <div class="вкладка" onclick="фильтровать('тюльпаны', this)">Тюльпаны</div>
+        <div class="вкладка" onclick="фильтровать('пионы', this)">Пионы</div>
+        <div class="вкладка" onclick="фильтровать('наборы', this)">Наборы</div>
+    </div>
+
+    <div class="каталог">
+        <div class="товар" data-категория="розы">
+            <div class="бейдж">Хит</div>
+            <a href="product.html?id=roses-classic">
+                <img src="https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=400&auto=format&fit=crop" alt="Букет роз">
+                <h3>Букет роз "Классика"</h3>
+            </a>
+            <p class="цена">8 500 ₸</p>
+            <button onclick="добавитьВКорзину('Букет роз Классика', 8500)">В корзину</button>
+        </div>
+        <div class="товар" data-категория="розы">
+            <a href="product.html?id=roses-51">
+                <img src="https://images.unsplash.com/photo-1613052271194-5427710fb39d?fm=jpg&q=60&w=400&auto=format&fit=crop" alt="51 роза">
+                <h3>51 роза</h3>
+            </a>
+            <p class="цена">24 000 ₸</p>
+            <button onclick="добавитьВКорзину('51 роза', 24000)">В корзину</button>
+        </div>
+        <div class="товар" data-категория="розы">
+            <div class="бейдж">Хит</div>
+            <a href="product.html?id=roses-101">
+                <img src="https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=400&auto=format&fit=crop" alt="101 роза">
+                <h3>101 роза</h3>
+            </a>
+            <p class="цена">42 000 ₸</p>
+            <button onclick="добавитьВКорзину('101 роза', 42000)">В корзину</button>
+        </div>
+        <div class="товар" data-категория="тюльпаны">
+            <a href="product.html?id=tulips-classic">
+                <img src="https://images.unsplash.com/photo-1702505704531-390436c28b6d?fm=jpg&q=60&w=400&auto=format&fit=crop" alt="Букет тюльпанов">
+                <h3>Букет тюльпанов</h3>
+            </a>
+            <p class="цена">6 200 ₸</p>
+            <button onclick="добавитьВКорзину('Букет тюльпанов', 6200)">В корзину</button>
+        </div>
+        <div class="товар" data-категория="тюльпаны">
+            <a href="product.html?id=tulips-mix">
+                <img src="https://images.unsplash.com/photo-1702505704531-390436c28b6d?fm=jpg&q=60&w=400&auto=format&fit=crop" alt="Весенний тюльпан-микс">
+                <h3>Весенний тюльпан-микс</h3>
+            </a>
+            <p class="цена">9 800 ₸</p>
+            <button onclick="добавитьВКорзину('Весенний тюльпан-микс', 9800)">В корзину</button>
+        </div>
+        <div class="товар" data-категория="пионы">
+            <div class="бейдж">Новинка</div>
+            <a href="product.html?id=peonies-classic">
+                <img src="https://images.unsplash.com/photo-1549576351-2b0829ac81f8?fm=jpg&q=60&w=400&auto=format&fit=crop" alt="Букет пионов">
+                <h3>Букет пионов</h3>
+            </a>
+            <p class="цена">11 000 ₸</p>
+            <button onclick="добавитьВКорзину('Букет пионов', 11000)">В корзину</button>
+        </div>
+        <div class="товар" data-категория="пионы">
+            <a href="product.html?id=peonies-powder">
+                <img src="https://images.unsplash.com/photo-1549576351-2b0829ac81f8?fm=jpg&q=60&w=400&auto=format&fit=crop" alt="Пудровые пионы">
+                <h3>Пудровые пионы</h3>
+            </a>
+            <p class="цена">15 500 ₸</p>
+            <button onclick="добавитьВКорзину('Пудровые пионы', 15500)">В корзину</button>
+        </div>
+        <div class="товар" data-категория="наборы">
+            <a href="product.html?id=mix-assorti">
+                <img src="https://images.unsplash.com/photo-1549576351-2b0829ac81f8?fm=jpg&q=60&w=400&auto=format&fit=crop" alt="Микс-букет Ассорти">
+                <h3>Микс-букет "Ассорти"</h3>
+            </a>
+            <p class="цена">13 000 ₸</p>
+            <button onclick="добавитьВКорзину('Микс-букет Ассорти', 13000)">В корзину</button>
+        </div>
+        <div class="товар" data-категория="наборы">
+            <div class="бейдж">Подарок</div>
+            <a href="product.html?id=set-bear-101">
+                <img src="https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=400&auto=format&fit=crop" alt="Мишка + 101 роза">
+                <h3>Набор: Мишка + 101 роза</h3>
+            </a>
+            <p class="цена">47 000 ₸</p>
+            <button onclick="добавитьВКорзину('Набор Мишка + 101 роза', 47000)">В корзину</button>
+        </div>
+    </div>
+
+    <div class="преимущества">
+        <div class="преимущество">
+            <div class="иконка">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#c9714a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="6" width="13" height="10"/><path d="M14 10h4l4 3.5V16h-8z"/><circle cx="6" cy="18.5" r="1.7"/><circle cx="17.5" cy="18.5" r="1.7"/>
+                </svg>
+            </div>
+            <p>Быстрая доставка</p>
+        </div>
+        <div class="преимущество">
+            <div class="иконка">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#c9714a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2c2 3 2 6 0 8-2-2-2-5 0-8z"/><path d="M12 10c3-1 6 0 8 2-2 2-5 3-8 2-3 1-6 0-8-2 2-2 5-3 8-2z"/><path d="M12 12v10"/>
+                </svg>
+            </div>
+            <p>Свежие цветы</p>
+        </div>
+        <div class="преимущество">
+            <div class="иконка">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="#c9714a" stroke="none">
+                    <path d="M13 2 3 14h7l-1 8 10-12h-7z"/>
+                </svg>
+            </div>
+            <p>Моментальное обслуживание</p>
+        </div>
+    </div>
+
+    <h2 class="заголовок-раздела">Частые вопросы</h2>
+    <div class="faq">
+        <div class="faq-вопрос">
+            <div class="faq-заголовок" onclick="переключитьFAQ(this)">Как заказать? <span>+</span></div>
+            <div class="faq-ответ">Выберите букет в каталоге, нажмите «В корзину», затем перейдите в корзину и оформите заказ через WhatsApp.</div>
+        </div>
+        <div class="faq-вопрос">
+            <div class="faq-заголовок" onclick="переключитьFAQ(this)">Какие букеты самые популярные? <span>+</span></div>
+            <div class="faq-ответ">101 роза, 51 роза.</div>
+        </div>
+        <div class="faq-вопрос">
+            <div class="faq-заголовок" onclick="переключитьFAQ(this)">Где вас найти? <span>+</span></div>
+            <div class="faq-ответ">г. Астана, ул. Туран 57/1. Также можно написать нам в WhatsApp.</div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Vettori. Цветочный магазин.</p>
+    </footer>
+
+    <button id="наверх" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+    </button>
+
+    <div id="уведомление">Добавлено в корзину!</div>
+
+    <a href="cart.html" id="плавающая-корзина">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+            <path d="M7 4V3a5 5 0 0 1 10 0v1h3a1 1 0 0 1 1 1.1l-1.2 14a2 2 0 0 1-2 1.9H6.2a2 2 0 0 1-2-1.9L3 5.1A1 1 0 0 1 4 4h3zm2 0h6V3a3 3 0 0 0-6 0v1z"/>
+        </svg>
+        <span class="корзина-значок" id="счёт-корзины">0</span>
+    </a>
+
+    <a href="https://wa.me/77474310621" target="_blank" class="плавающая-кнопка">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.87 9.87 0 0 0 4.74 1.2h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.3-1.93 1.38-.5.08-1.13.11-1.83-.11a16.6 16.6 0 0 1-1.6-.6c-2.83-1.22-4.67-4.06-4.81-4.25-.14-.19-1.15-1.53-1.15-2.92 0-1.39.73-2.07.99-2.35.26-.29.57-.36.76-.36h.55c.18 0 .42-.07.65.5.24.58.83 2 .9 2.14.07.14.11.31.02.5-.09.19-.14.31-.28.47l-.43.5c-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11 1 2.05 1.31 2.34 1.45.29.14.46.12.63-.07.17-.19.72-.84.91-1.13.19-.29.38-.24.64-.14.26.09 1.66.78 1.94.92.28.14.47.21.53.33.07.12.07.68-.17 1.36z"/></svg>
+    </a>
+
+    <script>
+        let корзина = JSON.parse(localStorage.getItem('корзина')) || [];
+
+        function обновитьСчётчик() {
+            document.getElementById('счёт-корзины').textContent = корзина.length;
+        }
+
+        function показатьУведомление() {
+            const у = document.getElementById('уведомление');
+            у.classList.add('показано');
+            setTimeout(() => у.classList.remove('показано'), 2000);
+        }
+
+        function добавитьВКорзину(название, цена) {
+            корзина.push({ название: название, цена: цена });
+            localStorage.setItem('корзина', JSON.stringify(корзина));
+            обновитьСчётчик();
+            const кнопкаКорзины = document.getElementById('плавающая-корзина');
+            кнопкаКорзины.classList.remove('пульс');
+            void кнопкаКорзины.offsetWidth;
+            кнопкаКорзины.classList.add('пульс');
+            показатьУведомление();
+        }
+
+        function переключитьFAQ(эл) {
+            эл.parentElement.classList.toggle('открыт');
+        }
+
+        function фильтровать(категория, кнопка) {
+            document.querySelectorAll('.вкладка').forEach(в => в.classList.remove('активна'));
+            кнопка.classList.add('активна');
+            document.querySelectorAll('.товар').forEach(товар => {
+                if (категория === 'все' || товар.dataset.категория === категория) {
+                    товар.style.display = 'block';
+                } else {
+                    товар.style.display = 'none';
+                }
+            });
+        }
+
+        window.addEventListener('load', function() {
+            const полоса = document.getElementById('полоса-загрузки');
+            полоса.style.width = '100%';
+            setTimeout(() => { полоса.style.opacity = '0'; }, 400);
+        });
+
+        const наблюдатель = new IntersectionObserver((записи) => {
+            записи.forEach(запись => {
+                if (запись.isIntersecting) { запись.target.classList.add('видно'); }
+            });
+        });
+        document.querySelectorAll('.товар, .faq-вопрос').forEach(эл => наблюдатель.observe(эл));
+
+        window.onscroll = function() {
+            document.getElementById('наверх').style.display = window.scrollY > 300 ? 'flex' : 'none';
+        };
+
+        обновитьСчётчик();
+    </script>
+
+</body>
+</html>

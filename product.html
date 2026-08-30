@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Товар — Vettori</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            background: #fdf8f3;
+            color: #4a2c30;
+        }
+        header {
+            background: #6b2737;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .лого {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #f3dfd8;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        nav a:hover { color: #fff; }
+        .содержимое {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .назад {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #6b2737;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .карточка-товара {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 6px 20px rgba(107,39,55,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+        .карточка-товара img {
+            width: 280px;
+            max-width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        .инфо-товара {
+            flex: 1;
+            min-width: 220px;
+        }
+        .инфо-товара h1 {
+            font-family: 'Playfair Display', serif;
+            color: #6b2737;
+            font-size: 26px;
+            margin: 0 0 10px;
+        }
+        .инфо-товара p.описание {
+            color: #555;
+            line-height: 1.6;
+        }
+        .цена-товара {
+            color: #6b2737;
+            font-weight: 700;
+            font-size: 24px;
+            margin: 16px 0;
+        }
+        button {
+            background: #6b2737;
+            color: white;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        footer {
+            background: #6b2737;
+            color: #f3dfd8;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="лого">Vettori</a>
+        <nav>
+            <a href="index.html">Каталог</a>
+            <a href="cart.html">Корзина</a>
+            <a href="contacts.html">Контакты</a>
+        </nav>
+    </header>
+
+    <div class="содержимое">
+        <a href="index.html" class="назад">← Назад в каталог</a>
+        <div class="карточка-товара" id="карточка"></div>
+    </div>
+
+    <footer>
+        <p>© 2026 Vettori. Цветочный магазин.</p>
+    </footer>
+
+    <script>
+        const товары = {
+            'roses-classic': { название: 'Букет роз "Классика"', цена: 8500, картинка: 'https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Классический букет из свежих роз — универсальный подарок на любой случай.' },
+            'roses-51': { название: '51 роза', цена: 24000, картинка: 'https://images.unsplash.com/photo-1613052271194-5427710fb39d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Роскошный букет из 51 розы — яркое выражение чувств для особого повода.' },
+            'roses-101': { название: '101 роза', цена: 42000, картинка: 'https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Впечатляющий букет из 101 розы — грандиозный подарок, который запомнится надолго.' },
+            'tulips-classic': { название: 'Букет тюльпанов', цена: 6200, картинка: 'https://images.unsplash.com/photo-1702505704531-390436c28b6d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Нежный букет тюльпанов — символ весны и лёгкости.' },
+            'tulips-mix': { название: 'Весенний тюльпан-микс', цена: 9800, картинка: 'https://images.unsplash.com/photo-1702505704531-390436c28b6d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Весенняя композиция из тюльпанов разных оттенков — свежо и празднично.' },
+            'peonies-classic': { название: 'Букет пионов', цена: 11000, картинка: 'https://images.unsplash.com/photo-1549576351-2b0829ac81f8?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Пышный букет пионов с мягким ароматом — для тех, кто ценит утончённость.' },
+            'peonies-powder': { название: 'Пудровые пионы', цена: 15500, картинка: 'https://images.unsplash.com/photo-1549576351-2b0829ac81f8?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Пионы в нежных пудровых тонах — романтичный и стильный подарок.' },
+            'mix-assorti': { название: 'Микс-букет "Ассорти"', цена: 13000, картинка: 'https://images.unsplash.com/photo-1549576351-2b0829ac81f8?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Яркий сборный букет из разных цветов — для тех, кто любит разнообразие.' },
+            'set-bear-101': { название: 'Набор: Мишка + 101 роза', цена: 47000, картинка: 'https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Большой плюшевый мишка вместе с роскошным букетом из 101 розы — эффектный подарок на памятную дату.' }
+        };
+
+        const параметры = new URLSearchParams(window.location.search);
+        const id = параметры.get('id');
+        const товар = товары[id];
+        const карточка = document.getElementById('карточка');
+
+        if (товар) {
+            карточка.innerHTML = `
+                <img src="${товар.картинка}" alt="${товар.название}">
+                <div class="инфо-товара">
+                    <h1>${товар.название}</h1>
+                    <p class="описание">${товар.описание}</p>
+                    <p class="цена-товара">${товар.цена.toLocaleString()} ₸</p>
+                    <button onclick="добавить()">В корзину</button>
+                </div>
+            `;
+        } else {
+            карточка.innerHTML = '<p>Товар не найден.</p>';
+        }
+
+        function добавить() {
+            let корзина = JSON.parse(localStorage.getItem('корзина')) || [];
+            корзина.push({ название: товар.название, цена: товар.цена });
+            localStorage.setItem('корзина', JSON.stringify(корзина));
+            alert('Добавлено в корзину!');
+        }
+    </script>
+
+</body>
+</html>
