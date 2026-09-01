@@ -10,8 +10,8 @@
         body {
             font-family: 'Inter', Arial, sans-serif;
             margin: 0;
-            background: #fdf8f3;
-            color: #4a2c30;
+            background: #241a1a;
+            color: #f3e6df;
         }
         header {
             background: #6b2737;
@@ -22,7 +22,7 @@
             position: sticky;
             top: 0;
             z-index: 20;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         .лого {
             font-family: 'Playfair Display', serif;
@@ -40,22 +40,23 @@
         }
         nav a:hover { color: #fff; }
         .содержимое {
-            max-width: 700px;
+            max-width: 760px;
             margin: 40px auto;
             padding: 0 20px;
         }
         .назад {
             display: inline-block;
             margin-bottom: 20px;
-            color: #6b2737;
+            color: #c9714a;
             text-decoration: none;
             font-size: 14px;
         }
         .карточка-товара {
-            background: white;
+            background: #34262a;
+            border: 1px solid #4a3438;
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 6px 20px rgba(107,39,55,0.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
             display: flex;
             flex-wrap: wrap;
             gap: 24px;
@@ -73,21 +74,27 @@
         }
         .инфо-товара h1 {
             font-family: 'Playfair Display', serif;
-            color: #6b2737;
+            color: #f3e6df;
             font-size: 26px;
             margin: 0 0 10px;
         }
         .инфо-товара p.описание {
-            color: #555;
+            color: #c9b3ac;
             line-height: 1.6;
         }
         .цена-товара {
-            color: #6b2737;
+            color: #c9714a;
             font-weight: 700;
             font-size: 24px;
-            margin: 16px 0;
+            margin: 16px 0 8px;
         }
-        button {
+        .строка-инфо {
+            font-size: 13px;
+            color: #c9b3ac;
+            margin-bottom: 6px;
+        }
+        .строка-инфо b { color: #f3e6df; }
+        button.купить {
             background: #6b2737;
             color: white;
             border: none;
@@ -96,6 +103,61 @@
             cursor: pointer;
             font-size: 15px;
             font-weight: 500;
+            margin-top: 12px;
+        }
+        .раздел-допов {
+            margin-top: 36px;
+        }
+        .раздел-допов h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: #f3e6df;
+            margin-bottom: 16px;
+        }
+        .список-допов {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .доп-карточка {
+            background: #34262a;
+            border: 1px solid #4a3438;
+            border-radius: 12px;
+            padding: 12px;
+            width: 140px;
+            text-align: center;
+        }
+        .доп-карточка img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .доп-карточка h4 {
+            font-size: 13px;
+            margin: 8px 0 4px;
+            color: #f3e6df;
+        }
+        .доп-карточка .доп-цена {
+            color: #c9714a;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .доп-карточка button {
+            background: #241a1a;
+            color: #f3e6df;
+            border: 1px solid #4a3438;
+            padding: 6px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+            width: 100%;
+        }
+        .доп-карточка button.добавлено {
+            background: #c9714a;
+            color: #241a1a;
+            border-color: #c9714a;
         }
         footer {
             background: #6b2737;
@@ -121,6 +183,11 @@
     <div class="содержимое">
         <a href="index.html" class="назад">← Назад в каталог</a>
         <div class="карточка-товара" id="карточка"></div>
+
+        <div class="раздел-допов">
+            <h2>Что добавить к букету?</h2>
+            <div class="список-допов" id="список-допов"></div>
+        </div>
     </div>
 
     <footer>
@@ -129,15 +196,19 @@
 
     <script>
         const товары = {
-            'roses-classic': { название: 'Букет роз "Классика"', цена: 8500, картинка: 'https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Классический букет из свежих роз — универсальный подарок на любой случай.' },
-            'roses-51': { название: '51 роза', цена: 24000, картинка: 'https://images.unsplash.com/photo-1613052271194-5427710fb39d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Роскошный букет из 51 розы — яркое выражение чувств для особого повода.' },
-            'roses-101': { название: '101 роза', цена: 42000, картинка: 'https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Впечатляющий букет из 101 розы — грандиозный подарок, который запомнится надолго.' },
+            'roses-classic': { название: 'Букет роз "Классика"', цена: 8500, картинка: 'https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Классический букет из свежих роз — универсальный подарок на любой случай.', средняяДлина: '60 см' },
+            'roses-51': { название: '51 роза', цена: 24000, картинка: 'https://images.unsplash.com/photo-1613052271194-5427710fb39d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Роскошный букет из 51 розы — яркое выражение чувств для особого повода.', средняяДлина: '60 см' },
+            'roses-101': { название: '101 роза', цена: 42000, картинка: 'https://images.unsplash.com/photo-1613052271194-5427710fb39d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Впечатляющий букет из 101 розы — грандиозный подарок, который запомнится надолго.', средняяДлина: '60 см' },
             'tulips-classic': { название: 'Букет тюльпанов', цена: 6200, картинка: 'https://images.unsplash.com/photo-1702505704531-390436c28b6d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Нежный букет тюльпанов — символ весны и лёгкости.' },
             'tulips-mix': { название: 'Весенний тюльпан-микс', цена: 9800, картинка: 'https://images.unsplash.com/photo-1702505704531-390436c28b6d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Весенняя композиция из тюльпанов разных оттенков — свежо и празднично.' },
             'peonies-classic': { название: 'Букет пионов', цена: 11000, картинка: 'https://images.unsplash.com/photo-1549576351-2b0829ac81f8?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Пышный букет пионов с мягким ароматом — для тех, кто ценит утончённость.' },
             'peonies-powder': { название: 'Пудровые пионы', цена: 15500, картинка: 'https://images.unsplash.com/photo-1549576351-2b0829ac81f8?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Пионы в нежных пудровых тонах — романтичный и стильный подарок.' },
             'mix-assorti': { название: 'Микс-букет "Ассорти"', цена: 13000, картинка: 'https://images.unsplash.com/photo-1549576351-2b0829ac81f8?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Яркий сборный букет из разных цветов — для тех, кто любит разнообразие.' },
-            'set-bear-101': { название: 'Набор: Мишка + 101 роза', цена: 47000, картинка: 'https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Большой плюшевый мишка вместе с роскошным букетом из 101 розы — эффектный подарок на памятную дату.' }
+            'set-bear-101': { название: 'Набор: Мишка + 101 роза', цена: 47000, картинка: 'https://images.unsplash.com/photo-1523693916903-027d144a2b7d?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Большой плюшевый мишка вместе с роскошным букетом из 101 розы — эффектный подарок на памятную дату.' },
+            'gift-bento-cake': { название: 'Бенто-тортик', цена: 4500, картинка: 'https://images.unsplash.com/photo-1644865439228-49106cb7b601?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Мини-тортик в фирменной коробке — милый и трогательный подарок на любой праздник.' },
+            'gift-strawberries': { название: 'Клубника в шоколаде', цена: 7500, картинка: 'https://images.unsplash.com/photo-1737587540791-e52d903f4b03?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Свежая клубника в бельгийском шоколаде — сладкое дополнение к любому букету.' },
+            'gift-bear-s': { название: 'Плюшевый мишка S', цена: 4000, картинка: 'https://images.unsplash.com/photo-1583478415880-b79447d73a84?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Небольшой плюшевый мишка — уютный подарок, который можно взять с собой куда угодно.' },
+            'gift-bear-m': { название: 'Плюшевый мишка M', цена: 6500, картинка: 'https://images.unsplash.com/photo-1538292999061-16ca3647ab1c?fm=jpg&q=60&w=600&auto=format&fit=crop', описание: 'Мишка среднего размера — мягкий и объёмный, отличный самостоятельный подарок или дополнение к букету.' }
         };
 
         const параметры = new URLSearchParams(window.location.search);
@@ -145,16 +216,35 @@
         const товар = товары[id];
         const карточка = document.getElementById('карточка');
 
-        if (товар) {
+        const времяДоставки = ['сегодня, с 16:00 до 19:00', 'завтра, с 10:00 до 13:00'];
+        const ближайшееВремя = времяДоставки[Math.floor(Math.random() * времяДоставки.length)];
+
+        function отрисоватьКарточку() {
+            const цена = товар.цена;
+            const бонус = Math.round(цена * 0.05);
+
+            let размерHTML = '';
+            if (товар.средняяДлина) {
+                размерHTML = `<div class="строка-инфо">Длина стебля: <b>${товар.средняяДлина}</b></div>`;
+            }
+
             карточка.innerHTML = `
                 <img src="${товар.картинка}" alt="${товар.название}">
                 <div class="инфо-товара">
                     <h1>${товар.название}</h1>
                     <p class="описание">${товар.описание}</p>
-                    <p class="цена-товара">${товар.цена.toLocaleString()} ₸</p>
-                    <button onclick="добавить()">В корзину</button>
+                    ${размерHTML}
+                    <p class="цена-товара">${цена.toLocaleString()} ₸</p>
+                    <div class="строка-инфо">Бонусы: <b>${бонус.toLocaleString()} ₸</b> (5%)</div>
+                    <div class="строка-инфо">Ближайшая доставка: <b>${ближайшееВремя}</b></div>
+                    <div class="строка-инфо">Стоимость доставки: <b>2 000 ₸</b></div>
+                    <button class="купить" onclick="добавить()">В корзину</button>
                 </div>
             `;
+        }
+
+        if (товар) {
+            отрисоватьКарточку();
         } else {
             карточка.innerHTML = '<p>Товар не найден.</p>';
         }
@@ -164,6 +254,30 @@
             корзина.push({ название: товар.название, цена: товар.цена });
             localStorage.setItem('корзина', JSON.stringify(корзина));
             alert('Добавлено в корзину!');
+        }
+
+        const допыСписок = ['gift-bento-cake', 'gift-strawberries', 'gift-bear-s', 'gift-bear-m'].filter(допId => допId !== id);
+        const контейнерДопов = document.getElementById('список-допов');
+        допыСписок.forEach(допId => {
+            const доп = товары[допId];
+            const карточкаДопа = document.createElement('div');
+            карточкаДопа.className = 'доп-карточка';
+            карточкаДопа.innerHTML = `
+                <img src="${доп.картинка}" alt="${доп.название}">
+                <h4>${доп.название}</h4>
+                <div class="доп-цена">${доп.цена.toLocaleString()} ₸</div>
+                <button onclick="добавитьДоп('${допId}', this)">+ Добавить</button>
+            `;
+            контейнерДопов.appendChild(карточкаДопа);
+        });
+
+        function добавитьДоп(допId, кнопка) {
+            const доп = товары[допId];
+            let корзина = JSON.parse(localStorage.getItem('корзина')) || [];
+            корзина.push({ название: доп.название, цена: доп.цена });
+            localStorage.setItem('корзина', JSON.stringify(корзина));
+            кнопка.textContent = 'Добавлено ✓';
+            кнопка.classList.add('добавлено');
         }
     </script>
 
